@@ -157,7 +157,7 @@ wwv_flow_api.create_plugin (
 '''  </div>''||chr(10)||'||unistr('\000a')||
 ''' <div class="footer">''||chr(10)||'||unistr('\000a')||
 '''   <span>Lorem ipsum footer dolor'||
-': consectetur adipiscing elit. <a href="about:blank">Lorum Ispsum Linksum</a></span>''||chr(10)||'||unistr('\000a')||
+': consectetur adipiscing elit. <a href="about:blank">Lorum Ispsum Linksum&APP_USER.</a></span>''||chr(10)||'||unistr('\000a')||
 ''' </div>''||chr(10)||'||unistr('\000a')||
 '''</body>''||chr(10)||'||unistr('\000a')||
 '''</html>''||chr(10);'||unistr('\000a')||
@@ -169,16 +169,16 @@ wwv_flow_api.create_plugin (
 '  p_is_public_page in boolean )'||unistr('\000a')||
 '  return apex_plugin.t_authentication_sentry_result'||unistr('\000a')||
 'is'||unistr('\000a')||
-'  l_session_recycle   va'||
-'rchar2(1) := p_authentication.attribute_02;'||unistr('\000a')||
+'  l_session_re'||
+'cycle   varchar2(1) := p_authentication.attribute_02;'||unistr('\000a')||
 '  l_whitelist         varchar2(32767) := p_authentication.attribute_03;'||unistr('\000a')||
 '  l_confirmation      varchar2(32767) := p_authentication.attribute_04;'||unistr('\000a')||
 '  l_cookie_session_id number;'||unistr('\000a')||
 '  l_user              APEX_WORKSPACE_SESSIONS.USER_NAME%TYPE;'||unistr('\000a')||
 '  l_result            apex_plugin.t_authentication_sentry_result;'||unistr('\000a')||
 '  l_valid             boolean;'||unistr('\000a')||
-'  l_query_string      v'||
-'archar2(32767) := null;'||unistr('\000a')||
+'  l_query_str'||
+'ing      varchar2(32767) := null;'||unistr('\000a')||
 '  l_app               varchar2(30)    := null;'||unistr('\000a')||
 '  l_page              varchar2(30)    := null;'||unistr('\000a')||
 '  l_session           varchar2(256)   := null;'||unistr('\000a')||
@@ -186,75 +186,112 @@ wwv_flow_api.create_plugin (
 '  l_footer            clob;'||unistr('\000a')||
 '  l_app_name          varchar2(32767) := null;'||unistr('\000a')||
 '  l_notification_page varchar2(32767) := null;'||unistr('\000a')||
+'  l_debug_log         varchar2(32767) := null;'||unistr('\000a')||
+'  '||unistr('\000a')||
+'  proc'||
+'edure dbg(p_str in varchar2) is'||unistr('\000a')||
+'  begin'||unistr('\000a')||
+'    l_debug_log := l_debug_log || p_str || chr(10);'||unistr('\000a')||
+'    apex_application.debug(''plasti-auth.session_recycler: '' || p_str);'||unistr('\000a')||
+'  end dbg;'||unistr('\000a')||
+'  '||unistr('\000a')||
+'  function is_recycle_candidate(session_id varchar2) return boolean is'||unistr('\000a')||
+'  begin'||unistr('\000a')||
+'    if session_id is null then'||unistr('\000a')||
+'      return false;'||unistr('\000a')||
+'    elsif :SESSION is null then'||unistr('\000a')||
+'      return true;'||unistr('\000a')||
+'    elsif :SESSION != session_id then'||unistr('\000a')||
+'    '||
+'  return true;'||unistr('\000a')||
+'    end if;'||unistr('\000a')||
+'    return false;'||unistr('\000a')||
+'  end is_recycle_candidate;'||unistr('\000a')||
 'begin'||unistr('\000a')||
 '  --Public page check'||unistr('\000a')||
 '  if p_is_public_page = true then'||unistr('\000a')||
-'    '||
-'l_result.is_valid := true;'||unistr('\000a')||
+'    l_result.is_valid := true;'||unistr('\000a')||
+'    dbg(''public page - sentry passed'');'||unistr('\000a')||
 '    return l_result;'||unistr('\000a')||
 '  end if;'||unistr('\000a')||
 '  '||unistr('\000a')||
 '  l_result.is_valid := apex_custom_auth.is_session_valid;'||unistr('\000a')||
 '  '||unistr('\000a')||
 '  if (l_result.is_valid = false or nvl(:APP_USER,''nobody'') = ''nobody'')'||unistr('\000a')||
-'  and l_session_recycle = ''Y'' and l_whitelist is not null'||unistr('\000a')||
+'  and l_session_recycle = ''Y'||
+''' and l_whitelist is not null'||unistr('\000a')||
 '  and regexp_like(l_whitelist,''(^|,)''||:APP_PAGE_ID||''(,|$)'') then'||unistr('\000a')||
 '  '||unistr('\000a')||
+'    dbg(''user unauthenticated - session recycle permitted on page #''||:APP_PAGE_ID);'||unistr('\000a')||
+'    '||unistr('\000a')||
 '    l_cookie_session_id := APEX_CUSTOM_AUTH.GET_SESSION_ID_FROM_COOKIE;'||unistr('\000a')||
-'    if '||
-'l_cookie_session_id is not null then'||unistr('\000a')||
-''||unistr('\000a')||
+'    '||unistr('\000a')||
+'    if is_recycle_candidate(l_cookie_session_id) then'||unistr('\000a')||
 '      -- Validate cookie session and get username'||unistr('\000a')||
 '      begin'||unistr('\000a')||
-'        select user_name'||unistr('\000a')||
+'        select us'||
+'er_name'||unistr('\000a')||
 '          into l_user'||unistr('\000a')||
 '          from APEX_WORKSPACE_SESSIONS'||unistr('\000a')||
 '         where nvl(user_name,''nobody'') != ''nobody'''||unistr('\000a')||
 '           and apex_session_id = l_cookie_session_id;'||unistr('\000a')||
 '        l_result.is_valid := true;'||unistr('\000a')||
 '      exception when NO_DATA_FOUND then'||unistr('\000a')||
-'        null;'||unistr('\000a')||
+'        dbg(''cookie session invalid - sentry failed'');'||unistr('\000a')||
+'        l_result.is_valid := false;'||unistr('\000a')||
 '      end;'||unistr('\000a')||
 ''||unistr('\000a')||
-'      if'||
-' l_result.is_valid then'||unistr('\000a')||
+'      if l_result.is_valid then'||unistr('\000a')||
+'      '||unistr('\000a')||
+'        d'||
+'bg(''recycling session from cookie'');'||unistr('\000a')||
 '        '||unistr('\000a')||
+'        -- Recycle session'||unistr('\000a')||
 '        APEX_CUSTOM_AUTH.DEFINE_USER_SESSION ('||unistr('\000a')||
 '          p_user       => l_user,'||unistr('\000a')||
 '          p_session_id => l_cookie_session_id);'||unistr('\000a')||
+''||unistr('\000a')||
 '        -- Clear REQUEST to reduce risk of DML via external links'||unistr('\000a')||
 '        APEX_APPLICATION.G_REQUEST := NULL; '||unistr('\000a')||
 ''||unistr('\000a')||
 '        -- Display confirmation page with a link to the requested page'||unistr('\000a')||
-'        if l_confirmation is not null then'||unistr('\000a')||
-'          --'||
-' Undocumented functions that apparently break apart the query string...'||unistr('\000a')||
+'        if l_c'||
+'onfirmation is not null then'||unistr('\000a')||
+'          dbg(''user must confirm this action - rendering confirmation page and halting apex'');'||unistr('\000a')||
+'        '||unistr('\000a')||
+'          -- Undocumented functions that apparently break apart the query string...'||unistr('\000a')||
 '          l_query_string := WWV_FLOW_UTILITIES.URL_DECODE2(OWA_UTIL.GET_CGI_ENV(''QUERY_STRING''));'||unistr('\000a')||
-'          WWV_FLOW_UTILITIES.PARSE_QUERY_STRING(l_query_string,l_app,l_page,l_session,l_tail); '||unistr('\000a')||
+'          WWV_FLOW_UTILITIES.PARSE_QUERY_STRING(l_query_string,l_app,l_page,l_session'||
+',l_tail); '||unistr('\000a')||
 '          '||unistr('\000a')||
 '          -- Clear REQUEST to reduce risk of DML via external links'||unistr('\000a')||
 '          l_tail := regexp_replace(l_tail,''^[^:]+'');'||unistr('\000a')||
-'  '||
-'        '||unistr('\000a')||
-'          select application_name'||unistr('\000a')||
-'          into l_app_name'||unistr('\000a')||
-'          from apex_applications'||unistr('\000a')||
-'          where application_id = :app_id;'||unistr('\000a')||
+'          '||unistr('\000a')||
+'          -- Find the app name for template substitutions'||unistr('\000a')||
+'          select application_name into l_app_name'||unistr('\000a')||
+'          from apex_applications where application_id = :app_id;'||unistr('\000a')||
 '          '||unistr('\000a')||
 '          l_notification_page := sample_template;'||unistr('\000a')||
-'          l_notification_page := REPLACE(l_notification_page, ''#PLUGIN.APP_NAME#'', l_app_name);'||unistr('\000a')||
+'          l_'||
+'notification_page := REPLACE(l_notification_page, ''#PLUGIN.APP_NAME#'', l_app_name);'||unistr('\000a')||
 '          l_notification_page := REPLACE(l_notification_page, ''#PLUGIN.CONTENT#'', l_confirmation);'||unistr('\000a')||
-''||
 '          l_notification_page := REPLACE(l_notification_page, ''#PLUGIN.REDIRECT_URL#'', ''f?p=''||:APP_ID||'':''||l_page||'':''||l_cookie_session_id||'':''||l_tail);'||unistr('\000a')||
 '          '||unistr('\000a')||
-'          --Redirect to the old session (via confirmation page)'||unistr('\000a')||
+'          --Redirect to the old session (via conf'||
+'irmation page)'||unistr('\000a')||
 '          htp.init;'||unistr('\000a')||
 '          --owa_util.redirect_url(''f?p=''||:APP_ID||'':''||l_page||'':''||l_cookie_session_id||'':''||l_tail);'||unistr('\000a')||
 '          htp.p(l_notification_page);'||unistr('\000a')||
-'      '||
-'    apex_application.g_unrecoverable_error := true;'||unistr('\000a')||
+'          htp.p(''<!-- Debug Log'');'||unistr('\000a')||
+'          htp.p(l_debug_log);'||unistr('\000a')||
+'          htp.p(''-->'');'||unistr('\000a')||
+'          apex_application.g_unrecoverable_error := true;'||unistr('\000a')||
 '        end if;'||unistr('\000a')||
 '      end if;'||unistr('\000a')||
+'    else'||unistr('\000a')||
+'      dbg(''no session to recycle - se'||
+'ntry failed'');'||unistr('\000a')||
+'      l_result.is_valid := false; -- Nothing to recycle'||unistr('\000a')||
 '    end if;'||unistr('\000a')||
 '  end if;'||unistr('\000a')||
 '  '||unistr('\000a')||
@@ -267,8 +304,8 @@ wwv_flow_api.create_plugin (
 '  p_password       in varchar2 )'||unistr('\000a')||
 '  return apex_plugin.t_authentication_auth_result'||unistr('\000a')||
 'is'||unistr('\000a')||
-'  l_auth_func   varchar2(255) := p_'||
-'authentication.attribute_01;'||unistr('\000a')||
+'  l_auth_func   varchar2(255) := p_authenticat'||
+'ion.attribute_01;'||unistr('\000a')||
 '  l_auth_return integer;'||unistr('\000a')||
 '  l_dynsql      VARCHAR2(32767);'||unistr('\000a')||
 '  l_username    varchar2(255) := p_authentication.username;'||unistr('\000a')||
@@ -278,8 +315,8 @@ wwv_flow_api.create_plugin (
 '                  l_result boolean;'||unistr('\000a')||
 '                begin'||unistr('\000a')||
 '                  l_result := ''||Dbms_Assert.Sql_Object_Name(l_auth_func)||''(:1, :2);'||unistr('\000a')||
-'                     '||
-':3 := sys.diutil.bool_to_int(l_result);'||unistr('\000a')||
+'                     :3 := sys.d'||
+'iutil.bool_to_int(l_result);'||unistr('\000a')||
 '                end;'';'||unistr('\000a')||
 '  execute immediate l_dynsql using in l_username, in p_password, out l_auth_return;'||unistr('\000a')||
 ''||unistr('\000a')||
@@ -287,8 +324,8 @@ wwv_flow_api.create_plugin (
 '  return l_result;'||unistr('\000a')||
 'exception when others then'||unistr('\000a')||
 '  if SQLCODE = -6550 then'||unistr('\000a')||
-'    raise_application_error(-20001,''Authentication Plugin: authentication function must be of the format "Func'||
-'tion_Name(p_username varchar2, p_password varchar2) return boolean"'');'||unistr('\000a')||
+'    raise_application_error(-20001,''Authentication Plugin: authentication function must be of the format "Function_Name(p'||
+'_username varchar2, p_password varchar2) return boolean"'');'||unistr('\000a')||
 '  else'||unistr('\000a')||
 '    raise; --Fess up, it''s probably a bug in this block'||unistr('\000a')||
 '  end if;'||unistr('\000a')||
@@ -298,7 +335,7 @@ wwv_flow_api.create_plugin (
  ,p_authentication_function => 'dynamic_authentication'
  ,p_standard_attributes => 'INVALID_SESSION'
  ,p_substitute_attributes => true
- ,p_version_identifier => '0.1'
+ ,p_version_identifier => '0.1.01'
  ,p_about_url => 'https://github.com/CaptEgg/Plasti-Auth'
   );
 wwv_flow_api.create_plugin_attribute (
