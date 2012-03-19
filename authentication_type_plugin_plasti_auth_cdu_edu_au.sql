@@ -363,6 +363,30 @@ wwv_flow_api.create_plugin (
  ,p_substitute_attributes => true
  ,p_version_identifier => '0.2'
  ,p_about_url => 'https://github.com/CaptEgg/Plasti-Auth'
+ ,p_plugin_comment => 'PL/SQL code embedded in this plugin is publicly available for use as per MIT'||unistr('\000a')||
+'licence...'||unistr('\000a')||
+''||unistr('\000a')||
+'The MIT License (MIT)'||unistr('\000a')||
+'Copyright © 2012 Charles Darwin University, http://www.cdu.edu.au/'||unistr('\000a')||
+''||unistr('\000a')||
+'Permission is hereby granted, free of charge, to any person obtaining a copy'||unistr('\000a')||
+'of this software and associated documentation files (the "Software"), to deal'||unistr('\000a')||
+'in the Software without restriction, including without limitation the rights'||unistr('\000a')||
+'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell'||unistr('\000a')||
+'copies of the Software, and to permit persons to whom the Software is'||unistr('\000a')||
+'furnished to do so, subject to the following conditions:'||unistr('\000a')||
+''||unistr('\000a')||
+'The above copyright notice and this permission notice shall be included in'||unistr('\000a')||
+'all copies or substantial portions of the Software.'||unistr('\000a')||
+''||unistr('\000a')||
+'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR'||unistr('\000a')||
+'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,'||unistr('\000a')||
+'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE'||unistr('\000a')||
+'AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER'||unistr('\000a')||
+'LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,'||unistr('\000a')||
+'OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN'||unistr('\000a')||
+'THE SOFTWARE.'||unistr('\000a')||
+''
   );
 wwv_flow_api.create_plugin_attribute (
   p_id => 59826841468479352973 + wwv_flow_api.g_id_offset
