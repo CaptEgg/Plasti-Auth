@@ -1,3 +1,18 @@
-== Plasti-Auth ==
+== Plasti-Auth v0.2 ==
 
 This is an authentication plugin for Oracle Application Express 4.1. It's still under development and wont be ready for use in production until version 1.0. Feel free to contribute fixes and improvements.
+
+=== Existing Features ===
+
+* Requires a specified custom authentication function
+* Recycle user session from browser cookie based on a page id whitelist
+* Clear REQUEST variable to prevent default DML processes being invoked
+* Optional confirmation page displayed before recycling takes place
+
+=== Proposed Features ===
+
+* Error page displayed for links to pages that are not in the whitelist
+* Error page displayed if REQUEST variable has any value
+* Referer whitelist/regex and corresponding error page
+* Configurable session behaviour when visiting a public page
+* Configurable HTML template in the form of a PL/SQL expression returning varchar2
