@@ -6,13 +6,13 @@ This is an authentication plugin for Oracle Application Express 4.1. It's still 
 
 * Requires a specified custom authentication function
 * Recycle user session from browser cookie based on a page id whitelist
-* Clear REQUEST variable to prevent default DML processes being invoked
+* Clear REQUEST variable when recycling to prevent default DML processes being invoked
 * Optional confirmation page displayed before recycling takes place
 
 === Proposed Features ===
 
-* Error page displayed for links to pages that are not in the whitelist
-* Error page displayed if REQUEST variable has any value
+* Error page displayed for incoming links to pages that are not in the whitelist
+* Error page displayed if REQUEST variable has any value during session recycling
 * Referer whitelist/regex and corresponding error page
-* Configurable session behaviour when visiting a public page
+* Configurable session recycling behaviour when landing on a public page with no session
 * Configurable HTML template in the form of a PL/SQL expression returning varchar2
