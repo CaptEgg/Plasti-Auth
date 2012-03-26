@@ -335,33 +335,36 @@ wwv_flow_api.create_plugin (
 '  l_dynsql      VARCHAR2(32767);'||unistr('\000a')||
 '  l_username    varchar2(255) := p_authentication.username;'||unistr('\000a')||
 '  l_result      apex_plugin.t_authentication_auth_result;'||unistr('\000a')||
+'  plsql_exception  exception;'||unistr('\000a')||
+'  pragma        exception_init(plsql_exception,-6550);'||unistr('\000a')||
 'begin'||unistr('\000a')||
 '  l_dynsql :=  ''declare'||unistr('\000a')||
 '                  l_result boolean;''||'||unistr('\000a')||
 '                  p_authentication.plsql_code||'''||unistr('\000a')||
-'                begin'||unistr('\000a')||
-'                  l_result := ''||dbms_assert.qualified_sql_name(l_auth_'||
-'func)||''(:1, :2);'||unistr('\000a')||
+'        '||
+'        begin'||unistr('\000a')||
+'                  l_result := ''||dbms_assert.qualified_sql_name(l_auth_func)||''(:1, :2);'||unistr('\000a')||
 '                     :3 := sys.diutil.bool_to_int(l_result);'||unistr('\000a')||
 '                end;'';'||unistr('\000a')||
 '  execute immediate l_dynsql using in l_username, in p_password, out l_auth_return;'||unistr('\000a')||
 ''||unistr('\000a')||
 '  l_result.is_authenticated := sys.diutil.int_to_bool(l_auth_return);'||unistr('\000a')||
 '  return l_result;'||unistr('\000a')||
-'exception when others then'||unistr('\000a')||
-'  if SQLCODE = -6550 then'||unistr('\000a')||
-'    raise_application_error(-20001,''Authentication Plugin PL/SQL Error:'||
-' Check PL/SQL block and authentication function - expected format "Function_Name(p_username varchar2, p_password varchar2) return boolean"'');'||unistr('\000a')||
-'  else'||unistr('\000a')||
-'    raise; -- Fess up, it''s probably a bug in this block'||unistr('\000a')||
-'  end if;'||unistr('\000a')||
+'exception'||unistr('\000a')||
+'  when plsql_exception then'||unistr('\000a')||
+' '||
+'   raise_application_error( -20001,'||unistr('\000a')||
+'      ''Authentication Plugin: authentication function must be of the format ''||'||unistr('\000a')||
+'      ''"Function_Name(p_username varchar2, p_password varchar2) return boolean"'');'||unistr('\000a')||
+'  when others then'||unistr('\000a')||
+'    raise;'||unistr('\000a')||
 'end dynamic_authentication;'||unistr('\000a')||
 ''
  ,p_session_sentry_function => 'session_recycler'
  ,p_authentication_function => 'dynamic_authentication'
  ,p_standard_attributes => 'INVALID_SESSION'
  ,p_substitute_attributes => true
- ,p_version_identifier => '0.2'
+ ,p_version_identifier => '0.2.01'
  ,p_about_url => 'https://github.com/CaptEgg/Plasti-Auth'
  ,p_plugin_comment => 'PL/SQL code embedded in this plugin is publicly available for use as per MIT'||unistr('\000a')||
 'licence...'||unistr('\000a')||
