@@ -109,6 +109,7 @@ begin
   where app.APPLICATION_ID = APEX_APPLICATION.G_FLOW_ID
   and   page.APPLICATION_ID = app.APPLICATION_ID
   and   page.page_id = p_page_id
+  and   templ.APPLICATION_ID = app.APPLICATION_ID
   and   templ.THEME_NUMBER = app.theme_number
   and   templ.TEMPLATE_TYPE = 'Page'
   and   templ.TEMPLATE_NAME = page.PAGE_TEMPLATE

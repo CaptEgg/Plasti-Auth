@@ -55,13 +55,12 @@ Once the install file is no longer needed, it can be removed from the Export Rep
 HOW TO USE
 ==========
 1. Install the plug-in (see INSTALLATION AND UPDATE)
-2. Create a new page item
-3. Pick "Plug-Ins" as type
-4. Select the plug-in "Text Field Autocomplete - LOV Friendly"
-5. Follow the wizard and use Item Level Help to get more information about the
-   purpose and usage of the different settings.
+2. Navigate to Shared Components | Authentication Schemes | Create
+3. Select "Based on a pre-configured scheme from the gallery" | Next
+4. Name your scheme, select the installed plugin as the type ("Plasti-Auth [Plug-in]" by default)
+5. Follow the in line help links to configure the rest of the plugin.
 
-Note that you can also update existing items to use this new item-type, once installed.
+You must explicitly enable Session Recycling to actually get this plugin to do anything useful. This is by design to ensure people think for a minute before blindly switching it on.
 
 
 ADDITIONAL DETAILS
